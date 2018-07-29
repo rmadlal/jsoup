@@ -584,7 +584,8 @@ enum HtmlTreeBuilderState {
                             // the spec doesn't limit to < 64, but in degenerate cases (9000+ stack depth) this prevents
                             // run-aways
                             final int stackSize = stack.size();
-                            for (int si = 0; si < stackSize && si < 64; si++) {
+                            int si = 0;
+                            while (si < stackSize && si < 64) {
                                 Element el = stack.get(si);
                                 if (el == formatEl) {
                                     commonAncestor = stack.get(si - 1);
@@ -593,6 +594,7 @@ enum HtmlTreeBuilderState {
                                     furthestBlock = el;
                                     break;
                                 }
+                                si++;
                             }
                             if (furthestBlock == null) {
                                 tb.popStackToClose(formatEl.nodeName());
