@@ -580,10 +580,8 @@ enum HtmlTreeBuilderState {
                             ArrayList<Element> stack = tb.getStack();
                             // the spec doesn't limit to < 64, but in degenerate cases (9000+ stack depth) this prevents
                             // run-aways
-                            final int stackSize = stack.size();
-
-                            Element commonAncestor = getCommonAncestor(tb, formatEl, stack, stackSize);
-                            Element furthestBlock = getFurthestBlock(tb, formatEl, stack, stackSize);
+                            Element commonAncestor = getCommonAncestor(tb, formatEl, stack);
+                            Element furthestBlock = getFurthestBlock(tb, formatEl, stack);
 
                             if (furthestBlock == null) {
                                 tb.popStackToClose(formatEl.nodeName());
@@ -1457,7 +1455,8 @@ enum HtmlTreeBuilderState {
         }
     };
 
-    private static Element getCommonAncestor(HtmlTreeBuilder tb, Element formatEl, ArrayList<Element> stack, int stackSize) {
+    private static Element getCommonAncestor(HtmlTreeBuilder tb, Element formatEl, ArrayList<Element> stack) {
+        final int stackSize = stack.size();
         Element commonAncestor = null;
         boolean seenFormattingElement = false;
         int si = 0;
@@ -1474,7 +1473,8 @@ enum HtmlTreeBuilderState {
         return commonAncestor;
     }
 
-    private static Element getFurthestBlock(HtmlTreeBuilder tb, Element formatEl, ArrayList<Element> stack, int stackSize) {
+    private static Element getFurthestBlock(HtmlTreeBuilder tb, Element formatEl, ArrayList<Element> stack) {
+        final int stackSize = stack.size();
         Element furthestBlock = null;
         boolean seenFormattingElement = false;
         int si = 0;
