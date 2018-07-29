@@ -598,6 +598,8 @@ enum HtmlTreeBuilderState {
                                 }
                             }
                             co_slice: {
+                                seenFormattingElement = false;
+                                si = 0;
                                 while (si < stackSize && si < 64) {
                                     Element el = stack.get(si);
                                     if (el == formatEl) {
