@@ -1459,8 +1459,7 @@ enum HtmlTreeBuilderState {
         final int stackSize = stack.size();
         Element commonAncestor = null;
         boolean seenFormattingElement = false;
-        int si = 0;
-        while (si < stackSize && si < 64) {
+        for (int si = 0; si < stackSize && si < 64; si++) {
             Element el = stack.get(si);
             if (el == formatEl) {
                 commonAncestor = stack.get(si - 1);
@@ -1468,7 +1467,6 @@ enum HtmlTreeBuilderState {
             } else if (seenFormattingElement && tb.isSpecial(el)) {
                 break;
             }
-            si++;
         }
         return commonAncestor;
     }
@@ -1478,8 +1476,7 @@ enum HtmlTreeBuilderState {
         final int stackSize = stack.size();
         Element furthestBlock = null;
         boolean seenFormattingElement = false;
-        int si = 0;
-        while (si < stackSize && si < 64) {
+        for (int si = 0; si < stackSize && si < 64; si++) {
             Element el = stack.get(si);
             if (el == formatEl) {
                 seenFormattingElement = true;
@@ -1487,7 +1484,6 @@ enum HtmlTreeBuilderState {
                 furthestBlock = el;
                 break;
             }
-            si++;
         }
         return furthestBlock;
     }
