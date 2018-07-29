@@ -577,40 +577,14 @@ enum HtmlTreeBuilderState {
                             } else if (tb.currentElement() != formatEl)
                                 tb.error(this);
 
-                            Element furthestBlock = null;
-                            Element commonAncestor = null;
-                            boolean seenFormattingElement = false;
                             ArrayList<Element> stack = tb.getStack();
                             // the spec doesn't limit to < 64, but in degenerate cases (9000+ stack depth) this prevents
                             // run-aways
                             final int stackSize = stack.size();
-                            int si = 0;
-                            slice: {
-                                while (si < stackSize && si < 64) {
-                                    Element el = stack.get(si);
-                                    if (el == formatEl) {
-                                        commonAncestor = stack.get(si - 1);
-                                        seenFormattingElement = true;
-                                    } else if (seenFormattingElement && tb.isSpecial(el)) {
-                                        break;
-                                    }
-                                    si++;
-                                }
-                            }
-                            co_slice: {
-                                seenFormattingElement = false;
-                                si = 0;
-                                while (si < stackSize && si < 64) {
-                                    Element el = stack.get(si);
-                                    if (el == formatEl) {
-                                        seenFormattingElement = true;
-                                    } else if (seenFormattingElement && tb.isSpecial(el)) {
-                                        furthestBlock = el;
-                                        break;
-                                    }
-                                    si++;
-                                }
-                            }
+
+                            Element commonAncestor = getCommonAncestor(tb, formatEl, stack, stackSize);
+                            Element furthestBlock = getFurthestBlock(tb, formatEl, stack, stackSize);
+
                             if (furthestBlock == null) {
                                 tb.popStackToClose(formatEl.nodeName());
                                 tb.removeFromActiveFormattingElements(formatEl);
@@ -1482,6 +1456,40 @@ enum HtmlTreeBuilderState {
             // todo: implement. Also; how do we get here?
         }
     };
+
+    private static Element getCommonAncestor(HtmlTreeBuilder tb, Element formatEl, ArrayList<Element> stack, int stackSize) {
+        Element commonAncestor = null;
+        boolean seenFormattingElement = false;
+        int si = 0;
+        while (si < stackSize && si < 64) {
+            Element el = stack.get(si);
+            if (el == formatEl) {
+                commonAncestor = stack.get(si - 1);
+                seenFormattingElement = true;
+            } else if (seenFormattingElement && tb.isSpecial(el)) {
+                break;
+            }
+            si++;
+        }
+        return commonAncestor;
+    }
+
+    private static Element getFurthestBlock(HtmlTreeBuilder tb, Element formatEl, ArrayList<Element> stack, int stackSize) {
+        Element furthestBlock = null;
+        boolean seenFormattingElement = false;
+        int si = 0;
+        while (si < stackSize && si < 64) {
+            Element el = stack.get(si);
+            if (el == formatEl) {
+                seenFormattingElement = true;
+            } else if (seenFormattingElement && tb.isSpecial(el)) {
+                furthestBlock = el;
+                break;
+            }
+            si++;
+        }
+        return furthestBlock;
+    }
 
     private static String nullString = String.valueOf('\u0000');
 
