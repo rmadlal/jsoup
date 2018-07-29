@@ -585,16 +585,29 @@ enum HtmlTreeBuilderState {
                             // run-aways
                             final int stackSize = stack.size();
                             int si = 0;
-                            while (si < stackSize && si < 64) {
-                                Element el = stack.get(si);
-                                if (el == formatEl) {
-                                    commonAncestor = stack.get(si - 1);
-                                    seenFormattingElement = true;
-                                } else if (seenFormattingElement && tb.isSpecial(el)) {
-                                    furthestBlock = el;
-                                    break;
+                            slice: {
+                                while (si < stackSize && si < 64) {
+                                    Element el = stack.get(si);
+                                    if (el == formatEl) {
+                                        commonAncestor = stack.get(si - 1);
+                                        seenFormattingElement = true;
+                                    } else if (seenFormattingElement && tb.isSpecial(el)) {
+                                        break;
+                                    }
+                                    si++;
                                 }
-                                si++;
+                            }
+                            co_slice: {
+                                while (si < stackSize && si < 64) {
+                                    Element el = stack.get(si);
+                                    if (el == formatEl) {
+                                        seenFormattingElement = true;
+                                    } else if (seenFormattingElement && tb.isSpecial(el)) {
+                                        furthestBlock = el;
+                                        break;
+                                    }
+                                    si++;
+                                }
                             }
                             if (furthestBlock == null) {
                                 tb.popStackToClose(formatEl.nodeName());
